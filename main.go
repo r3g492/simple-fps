@@ -17,23 +17,26 @@ func main() {
 
 	rl.SetTargetFPS(60)
 
-	playerPosition2 := rl.Vector3{X: 0, Y: 1, Z: 0}
-	playerForward2 := rl.Vector3{X: 0.1, Y: 0, Z: 0}
+	playerPosition := rl.Vector3{X: 0, Y: 1, Z: 0}
 	playerUpVector := rl.Vector3{X: 0, Y: 1, Z: 0}
-	playerMoveSpeed2 := float32(0.1)
-	playerNormalizedForward2 := rl.Vector3Normalize(playerForward2)
-	playerNormalizedRight2 := rl.Vector3Normalize(rl.Vector3CrossProduct(playerNormalizedForward2, playerUpVector))
-	playerPosition, playerForward, upVector, playerMoveSpeed, playerNormalizedForward, playerNormalizedRight := playerPosition2, playerForward2, playerUpVector, playerMoveSpeed2, playerNormalizedForward2, playerNormalizedRight2
-
-	sensitivity := float32(0.0025)
+	playerMoveSpeed := float32(8)
+	playerNormalizedForward := rl.Vector3Normalize(rl.Vector3{X: 0.1, Y: 0, Z: 0})
+	playerUpVelocity := float32(0.0)
+	sensitivity := float32(0.0015)
 	maxPitch := float32(1.553343)
 	var yaw, pitch float32
+	jumpPower := float32(3.2)
+	gravitationalForce := float32(-9.81)
+	lowerestGroundPoint := float32(1)
 
 	logEvery := 1000 * time.Millisecond
 	lastLog := time.Now()
 	rl.DisableCursor()
 
 	for !rl.WindowShouldClose() {
+		dt := rl.GetFrameTime()
+
+		// player movement start
 
 		// update camera by mouse input
 		mouseDelta := rl.GetMouseDelta()
@@ -48,25 +51,48 @@ func main() {
 		fx := float32(math.Cos(float64(pitch)) * math.Cos(float64(yaw)))
 		fy := float32(math.Sin(float64(pitch)))
 		fz := float32(math.Cos(float64(pitch)) * math.Sin(float64(yaw)))
-		playerForward = rl.Vector3Normalize(rl.NewVector3(fx, fy, fz))
-		playerNormalizedForward = playerForward
-		playerNormalizedRight = rl.Vector3Normalize(rl.Vector3CrossProduct(playerNormalizedForward, upVector))
+		playerNormalizedForward = rl.Vector3Normalize(rl.NewVector3(fx, fy, fz))
 
-		camera := updatePlayerCamera(playerPosition, playerForward, upVector)
+		camera := updatePlayerCamera(playerPosition, playerNormalizedForward, playerUpVector)
 
 		// do key inputs
+		// project forward onto XZ plane
+		vertical := rl.Vector3Scale(playerUpVector, rl.Vector3DotProduct(playerNormalizedForward, playerUpVector))
+		flatFwd := rl.Vector3Normalize(rl.Vector3Subtract(playerNormalizedForward, vertical))
+		right := rl.Vector3Normalize(rl.Vector3CrossProduct(flatFwd, playerUpVector))
+
+		// accumulate input
+		move := rl.NewVector3(0, 0, 0)
 		if rl.IsKeyDown(rl.KeyW) {
-			playerPosition = rl.Vector3Add(playerPosition, rl.Vector3Scale(playerNormalizedForward, playerMoveSpeed))
+			move = rl.Vector3Add(move, flatFwd)
 		}
 		if rl.IsKeyDown(rl.KeyS) {
-			playerPosition = rl.Vector3Subtract(playerPosition, rl.Vector3Scale(playerNormalizedForward, playerMoveSpeed))
+			move = rl.Vector3Subtract(move, flatFwd)
 		}
 		if rl.IsKeyDown(rl.KeyA) {
-			playerPosition = rl.Vector3Subtract(playerPosition, rl.Vector3Scale(playerNormalizedRight, playerMoveSpeed))
+			move = rl.Vector3Subtract(move, right)
 		}
 		if rl.IsKeyDown(rl.KeyD) {
-			playerPosition = rl.Vector3Add(playerPosition, rl.Vector3Scale(playerNormalizedRight, playerMoveSpeed))
+			move = rl.Vector3Add(move, right)
 		}
+
+		// normalize so diagonals are not faster
+		if rl.Vector3Length(move) > 0 {
+			dir := rl.Vector3Normalize(move)
+			playerPosition = rl.Vector3Add(playerPosition, rl.Vector3Scale(dir, playerMoveSpeed*dt))
+		}
+
+		// player must be at the ground to jump
+		if rl.IsKeyPressed(rl.KeySpace) && playerPosition.Y <= 1 {
+			playerUpVelocity = jumpPower
+		}
+		playerUpVelocity += gravitationalForce * dt
+		playerPosition = rl.Vector3Add(playerPosition, rl.Vector3Scale(playerUpVector, playerUpVelocity*dt))
+		if playerPosition.Y < lowerestGroundPoint {
+			playerPosition.Y = lowerestGroundPoint
+			playerUpVelocity = 0
+		}
+		// player movement end
 
 		// log
 		if time.Since(lastLog) >= logEvery {
