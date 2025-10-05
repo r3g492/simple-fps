@@ -133,6 +133,8 @@ func main() {
 		// --- end gun ---
 
 		rl.EndMode3D()
+
+		rl.DrawCircle(width/2, height/2, 3, rl.DarkGray)
 		rl.EndDrawing()
 
 		// log
