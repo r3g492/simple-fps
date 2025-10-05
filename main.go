@@ -29,6 +29,9 @@ func main() {
 	gravitationalForce := float32(-9.81)
 	lowerestGroundPoint := float32(1)
 
+	blastCooldown := 200 * time.Millisecond
+	lastBlast := time.Now()
+
 	logEvery := 1000 * time.Millisecond
 	lastLog := time.Now()
 	rl.DisableCursor()
@@ -72,8 +75,9 @@ func main() {
 			move = rl.Vector3Add(move, rl.Vector3{X: playerNormalizedRight.X, Y: 0, Z: playerNormalizedRight.Z})
 		}
 		blast := false
-		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && time.Since(lastBlast) >= blastCooldown {
 			blast = true
+			lastBlast = time.Now()
 		}
 
 		// normalize so diagonals are not faster
