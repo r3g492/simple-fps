@@ -60,16 +60,16 @@ func main() {
 		// accumulate input
 		move := rl.NewVector3(0, 0, 0)
 		if rl.IsKeyDown(rl.KeyW) {
-			move = rl.Vector3Add(move, playerNormalizedForward)
+			move = rl.Vector3Add(move, rl.Vector3{X: playerNormalizedForward.X, Y: 0, Z: playerNormalizedForward.Z})
 		}
 		if rl.IsKeyDown(rl.KeyS) {
-			move = rl.Vector3Subtract(move, playerNormalizedForward)
+			move = rl.Vector3Subtract(move, rl.Vector3{X: playerNormalizedForward.X, Y: 0, Z: playerNormalizedForward.Z})
 		}
 		if rl.IsKeyDown(rl.KeyA) {
-			move = rl.Vector3Subtract(move, playerNormalizedRight)
+			move = rl.Vector3Subtract(move, rl.Vector3{X: playerNormalizedRight.X, Y: 0, Z: playerNormalizedRight.Z})
 		}
 		if rl.IsKeyDown(rl.KeyD) {
-			move = rl.Vector3Add(move, playerNormalizedRight)
+			move = rl.Vector3Add(move, rl.Vector3{X: playerNormalizedRight.X, Y: 0, Z: playerNormalizedRight.Z})
 		}
 
 		// normalize so diagonals are not faster
@@ -103,10 +103,26 @@ func main() {
 		)
 
 		// --- start gun ---
+		right := rl.Vector3Normalize(rl.Vector3CrossProduct(playerNormalizedForward, playerUpVector))
+		camUp := rl.Vector3Normalize(rl.Vector3CrossProduct(right, playerNormalizedForward))
 
-		barrelStart := rl.Vector3Add(playerPosition, rl.Vector3Scale(playerNormalizedForward, 5))
-		rl.DrawSphere(barrelStart, 0.1, rl.Red)
-		// rl.DrawCylinderEx(barrelStart, barrelEnd, 0.06, 0.06, 10, rl.Gray)
+		const offF = float32(0.6)
+		const offR = float32(0.40)
+		const offU = float32(-0.64)
+		const barrelLen = float32(0.5)
+
+		gunStart := rl.Vector3Add(playerPosition,
+			rl.Vector3Add(
+				rl.Vector3Add(
+					rl.Vector3Scale(playerNormalizedForward, offF),
+					rl.Vector3Scale(right, offR),
+				),
+				rl.Vector3Scale(camUp, offU),
+			),
+		)
+		gunEnd := rl.Vector3Add(gunStart, rl.Vector3Scale(playerNormalizedForward, barrelLen))
+		rl.DrawLine3D(gunStart, gunEnd, rl.Blue)
+		rl.DrawCylinderEx(gunStart, gunEnd, 0.06, 0.03, 32, rl.Black)
 		// --- end gun ---
 
 		rl.EndMode3D()
