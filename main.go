@@ -1,13 +1,19 @@
 package main
 
 import (
+	"embed"
 	"fmt"
+	"log"
 	"math"
+	"os"
 	"simple-fps/bullet"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
+
+//go:embed resources/*
+var resFS embed.FS
 
 func main() {
 	var width int32 = 1600
@@ -17,6 +23,7 @@ func main() {
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(60)
+	rl.InitAudioDevice()
 
 	playerPosition := rl.Vector3{X: 0, Y: 1, Z: 0}
 	playerUpVector := rl.Vector3{X: 0, Y: 1, Z: 0}
@@ -30,6 +37,8 @@ func main() {
 	gravitationalForce := float32(-9.81)
 	lowerestGroundPoint := float32(1)
 
+	// https://pixabay.com/sound-effects/shotgun-03-38220/
+	gunShot := LoadSoundFromEmbedded("shotgun-03-38220.mp3")
 	blastCooldown := 200 * time.Millisecond
 	lastBlast := time.Now()
 
@@ -76,6 +85,7 @@ func main() {
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && time.Since(lastBlast) >= blastCooldown {
 			blast = true
 			lastBlast = time.Now()
+			rl.PlaySound(gunShot)
 			bullet.CreatePlayerBullet(playerPosition, playerNormalizedForward)
 		}
 		bullet.UpdatePlayerBullets(dt)
@@ -103,7 +113,7 @@ func main() {
 		// raylib graphics
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
-		rl.DrawText("Congrats! You created your first window!", 190, 200, 20, rl.LightGray)
+		// rl.DrawText("Congrats! You created your first window!", 190, 200, 20, rl.LightGray)
 		rl.BeginMode3D(camera)
 		rl.DrawGrid(
 			1024,
@@ -156,4 +166,25 @@ func updatePlayerCamera(playerPosition rl.Vector3, playerForward rl.Vector3, upV
 		Projection: rl.CameraPerspective,
 	}
 	return camera
+}
+
+func LoadSoundFromEmbedded(filename string) rl.Sound {
+	data, err := resFS.ReadFile("resources/" + filename)
+	if err != nil {
+		log.Fatalf("failed to read embedded sound %s: %v", filename, err)
+	}
+	tmpFile, err := os.CreateTemp("", "*.mp3")
+	if err != nil {
+		log.Fatalf("failed to create temporary file for %s: %v", filename, err)
+	}
+	_, err = tmpFile.Write(data)
+	if err != nil {
+		log.Fatalf("failed to write to temporary file for %s: %v", filename, err)
+	}
+	tmpFile.Close()
+	if err != nil {
+		log.Fatalf("failed to rename temporary file: %v", err)
+	}
+	snd := rl.LoadSound(tmpFile.Name())
+	return snd
 }
