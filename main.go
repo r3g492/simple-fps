@@ -40,7 +40,6 @@ func main() {
 		dt := rl.GetFrameTime()
 
 		// player movement start
-
 		// update camera by mouse input
 		mouseDelta := rl.GetMouseDelta()
 		yaw += mouseDelta.X * sensitivity
@@ -55,10 +54,8 @@ func main() {
 		fy := float32(math.Sin(float64(pitch)))
 		fz := float32(math.Cos(float64(pitch)) * math.Sin(float64(yaw)))
 		playerNormalizedForward = rl.Vector3Normalize(rl.NewVector3(fx, fy, fz))
-
-		// do key inputs
-		// project forward onto XZ plane
 		playerNormalizedRight := rl.Vector3Normalize(rl.Vector3CrossProduct(playerNormalizedForward, playerUpVector))
+		playerNormalizedUp := rl.Vector3Normalize(rl.Vector3CrossProduct(playerNormalizedRight, playerNormalizedForward))
 
 		// accumulate input
 		move := rl.NewVector3(0, 0, 0)
@@ -111,21 +108,17 @@ func main() {
 		)
 
 		// --- start gun ---
-		right := rl.Vector3Normalize(rl.Vector3CrossProduct(playerNormalizedForward, playerUpVector))
-		camUp := rl.Vector3Normalize(rl.Vector3CrossProduct(right, playerNormalizedForward))
-
 		const offF = float32(0.6)
 		const offR = float32(0.40)
 		const offU = float32(-0.64)
 		const barrelLen = float32(0.5)
-
 		gunStart := rl.Vector3Add(playerPosition,
 			rl.Vector3Add(
 				rl.Vector3Add(
 					rl.Vector3Scale(playerNormalizedForward, offF),
-					rl.Vector3Scale(right, offR),
+					rl.Vector3Scale(playerNormalizedRight, offR),
 				),
-				rl.Vector3Scale(camUp, offU),
+				rl.Vector3Scale(playerNormalizedUp, offU),
 			),
 		)
 		gunEnd := rl.Vector3Add(gunStart, rl.Vector3Scale(playerNormalizedForward, barrelLen))
