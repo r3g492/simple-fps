@@ -71,6 +71,10 @@ func main() {
 		if rl.IsKeyDown(rl.KeyD) {
 			move = rl.Vector3Add(move, rl.Vector3{X: playerNormalizedRight.X, Y: 0, Z: playerNormalizedRight.Z})
 		}
+		blast := false
+		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+			blast = true
+		}
 
 		// normalize so diagonals are not faster
 		if rl.Vector3Length(move) > 0 {
@@ -123,6 +127,9 @@ func main() {
 		gunEnd := rl.Vector3Add(gunStart, rl.Vector3Scale(playerNormalizedForward, barrelLen))
 		rl.DrawLine3D(gunStart, gunEnd, rl.Blue)
 		rl.DrawCylinderEx(gunStart, gunEnd, 0.06, 0.03, 32, rl.Black)
+		if blast {
+			rl.DrawSphere(gunEnd, 0.15, rl.Yellow)
+		}
 		// --- end gun ---
 
 		rl.EndMode3D()
