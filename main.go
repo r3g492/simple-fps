@@ -25,7 +25,7 @@ func main() {
 	sensitivity := float32(0.0015)
 	maxPitch := float32(1.553343)
 	var yaw, pitch float32
-	jumpPower := float32(3.2)
+	jumpPower := float32(6.4)
 	gravitationalForce := float32(-9.81)
 	lowerestGroundPoint := float32(1)
 
@@ -52,8 +52,6 @@ func main() {
 		fy := float32(math.Sin(float64(pitch)))
 		fz := float32(math.Cos(float64(pitch)) * math.Sin(float64(yaw)))
 		playerNormalizedForward = rl.Vector3Normalize(rl.NewVector3(fx, fy, fz))
-
-		camera := updatePlayerCamera(playerPosition, playerNormalizedForward, playerUpVector)
 
 		// do key inputs
 		// project forward onto XZ plane
@@ -97,6 +95,8 @@ func main() {
 			fmt.Println("mouseDelta:", mouseDelta)
 			lastLog = time.Now()
 		}
+
+		camera := updatePlayerCamera(playerPosition, playerNormalizedForward, playerUpVector)
 
 		// raylib graphics
 		rl.BeginDrawing()
