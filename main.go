@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"simple-fps/bullet"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -75,7 +76,9 @@ func main() {
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && time.Since(lastBlast) >= blastCooldown {
 			blast = true
 			lastBlast = time.Now()
+			bullet.CreatePlayerBullet(playerPosition, playerNormalizedForward)
 		}
+		bullet.UpdatePlayerBullets(dt)
 
 		// normalize so diagonals are not faster
 		if rl.Vector3Length(move) > 0 {
@@ -127,6 +130,7 @@ func main() {
 		if blast {
 			rl.DrawSphere(gunEnd, 0.15, rl.Yellow)
 		}
+		bullet.DrawPlayerBullets()
 		// --- end gun ---
 
 		rl.EndMode3D()
@@ -137,6 +141,7 @@ func main() {
 		// log
 		if time.Since(lastLog) >= logEvery {
 			fmt.Println("mouseDelta:", mouseDelta)
+			fmt.Println("playerBulletCnt: ", len(bullet.PlayerBullets))
 			lastLog = time.Now()
 		}
 	}
