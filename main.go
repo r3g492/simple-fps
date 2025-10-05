@@ -79,7 +79,7 @@ func main() {
 		}
 
 		// player must be at the ground to jump
-		if rl.IsKeyPressed(rl.KeySpace) && playerPosition.Y <= 1 {
+		if rl.IsKeyPressed(rl.KeySpace) && playerPosition.Y <= 2 {
 			playerUpVelocity = jumpPower
 		}
 		playerUpVelocity += gravitationalForce * dt
@@ -89,12 +89,6 @@ func main() {
 			playerUpVelocity = 0
 		}
 		// player movement end
-
-		// log
-		if time.Since(lastLog) >= logEvery {
-			fmt.Println("mouseDelta:", mouseDelta)
-			lastLog = time.Now()
-		}
 
 		camera := updatePlayerCamera(playerPosition, playerNormalizedForward, playerUpVector)
 
@@ -117,6 +111,12 @@ func main() {
 
 		rl.EndMode3D()
 		rl.EndDrawing()
+
+		// log
+		if time.Since(lastLog) >= logEvery {
+			fmt.Println("mouseDelta:", mouseDelta)
+			lastLog = time.Now()
+		}
 	}
 }
 
