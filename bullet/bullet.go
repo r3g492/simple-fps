@@ -36,6 +36,6 @@ func UpdatePlayerBullets(dt float32) {
 
 func DrawPlayerBullets() {
 	for _, b := range PlayerBullets {
-		rl.DrawSphere(b.Position, 0.04, rl.Yellow)
+		rl.DrawSphere(b.Position, 0.15, rl.Yellow)
 	}
 }

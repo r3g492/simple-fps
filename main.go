@@ -112,7 +112,7 @@ func main() {
 
 		// raylib graphics
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.RayWhite)
+		rl.ClearBackground(rl.Black)
 		// rl.DrawText("Congrats! You created your first window!", 190, 200, 20, rl.LightGray)
 		rl.BeginMode3D(camera)
 		rl.DrawGrid(
@@ -136,7 +136,7 @@ func main() {
 		)
 		gunEnd := rl.Vector3Add(gunStart, rl.Vector3Scale(playerNormalizedForward, barrelLen))
 		rl.DrawLine3D(gunStart, gunEnd, rl.Blue)
-		rl.DrawCylinderEx(gunStart, gunEnd, 0.06, 0.03, 32, rl.Black)
+		rl.DrawCylinderEx(gunStart, gunEnd, 0.06, 0.03, 32, rl.Gray)
 		if blast {
 			rl.DrawSphere(gunEnd, 0.15, rl.Yellow)
 		}
@@ -145,7 +145,7 @@ func main() {
 
 		rl.EndMode3D()
 
-		rl.DrawCircle(width/2, height/2, 3, rl.DarkGray)
+		rl.DrawCircle(width/2, height/2, 3, rl.White)
 		rl.EndDrawing()
 
 		// log
