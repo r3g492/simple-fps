@@ -38,7 +38,7 @@ func main() {
 	lowerestGroundPoint := float32(1)
 
 	// https://pixabay.com/sound-effects/shotgun-03-38220/
-	gunShot := LoadSoundFromEmbedded("shotgun-03-38220.mp3")
+	blastSound := LoadSoundFromEmbedded("shotgun-03-38220.mp3")
 	blastCooldown := 200 * time.Millisecond
 	lastBlast := time.Now()
 
@@ -85,7 +85,7 @@ func main() {
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && time.Since(lastBlast) >= blastCooldown {
 			blast = true
 			lastBlast = time.Now()
-			rl.PlaySound(gunShot)
+			rl.PlaySound(blastSound)
 			bullet.CreatePlayerBullet(playerPosition, playerNormalizedForward)
 		}
 		bullet.UpdatePlayerBullets(dt)
@@ -181,9 +181,9 @@ func LoadSoundFromEmbedded(filename string) rl.Sound {
 	if err != nil {
 		log.Fatalf("failed to write to temporary file for %s: %v", filename, err)
 	}
-	tmpFile.Close()
+	err = tmpFile.Close()
 	if err != nil {
-		log.Fatalf("failed to rename temporary file: %v", err)
+		return rl.Sound{}
 	}
 	snd := rl.LoadSound(tmpFile.Name())
 	return snd
