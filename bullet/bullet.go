@@ -1,6 +1,7 @@
 package bullet
 
 import (
+	"simple-fps/enemy"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -24,10 +25,22 @@ func UpdatePlayerBullets(dt float32) {
 	dst := PlayerBullets[:0]
 	for i := range PlayerBullets {
 		if now.Sub(PlayerBullets[i].CreatedAt) <= 3*time.Second {
-			PlayerBullets[i].Position = rl.Vector3Add(
-				PlayerBullets[i].Position,
+			start := PlayerBullets[i].Position
+			end := rl.Vector3Add(
+				start,
 				rl.Vector3Scale(PlayerBullets[i].NormalizedForward, PlayerBullets[i].MovementSpeed*dt),
 			)
+			hit := false
+			for _, e := range enemy.Enemies {
+				if e.IsHit(start, end) {
+					hit = true
+					break
+				}
+			}
+			PlayerBullets[i].Position = end
+			if hit {
+				continue
+			}
 			dst = append(dst, PlayerBullets[i])
 		}
 	}

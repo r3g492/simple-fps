@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"simple-fps/bullet"
+	"simple-fps/enemy"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -33,7 +34,7 @@ func main() {
 	sensitivity := float32(0.0015)
 	maxPitch := float32(1.553343)
 	var yaw, pitch float32
-	jumpPower := float32(6.4)
+	jumpPower := float32(3)
 	gravitationalForce := float32(-9.81)
 	lowerestGroundPoint := float32(1)
 
@@ -45,6 +46,8 @@ func main() {
 	logEvery := 1000 * time.Millisecond
 	lastLog := time.Now()
 	rl.DisableCursor()
+
+	enemy.CreateEnemy(rl.Vector3{X: 0, Y: 1, Z: 0}, rl.Vector3{X: 0, Y: 0, Z: 0})
 
 	for !rl.WindowShouldClose() {
 		dt := rl.GetFrameTime()
@@ -81,6 +84,8 @@ func main() {
 		if rl.IsKeyDown(rl.KeyD) {
 			move = rl.Vector3Add(move, rl.Vector3{X: playerNormalizedRight.X, Y: 0, Z: playerNormalizedRight.Z})
 		}
+
+		bullet.UpdatePlayerBullets(dt)
 		blast := false
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && time.Since(lastBlast) >= blastCooldown {
 			blast = true
@@ -88,7 +93,6 @@ func main() {
 			rl.PlaySound(blastSound)
 			bullet.CreatePlayerBullet(playerPosition, playerNormalizedForward)
 		}
-		bullet.UpdatePlayerBullets(dt)
 
 		// normalize so diagonals are not faster
 		if rl.Vector3Length(move) > 0 {
@@ -97,7 +101,7 @@ func main() {
 		}
 
 		// player must be at the ground to jump
-		if rl.IsKeyPressed(rl.KeySpace) && playerPosition.Y <= 2 {
+		if rl.IsKeyPressed(rl.KeySpace) && playerPosition.Y <= 1 {
 			playerUpVelocity = jumpPower
 		}
 		playerUpVelocity += gravitationalForce * dt
@@ -142,6 +146,8 @@ func main() {
 		}
 		bullet.DrawPlayerBullets()
 		// --- end gun ---
+
+		enemy.DrawEnemies()
 
 		rl.EndMode3D()
 
