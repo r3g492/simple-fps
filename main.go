@@ -38,19 +38,22 @@ func main() {
 	gravitationalForce := float32(-9.81)
 	lowerestGroundPoint := float32(1)
 
+	now := time.Now()
 	// https://pixabay.com/sound-effects/shotgun-03-38220/
 	blastSound := LoadSoundFromEmbedded("shotgun-03-38220.mp3")
 	blastCooldown := 200 * time.Millisecond
 	blastShowtime := 10 * time.Millisecond
-	lastBlast := time.Now()
+	lastBlast := now
 
 	logEvery := 1000 * time.Millisecond
-	lastLog := time.Now()
+	lastLog := now
 	rl.DisableCursor()
 
 	enemy.CreateEnemy(rl.Vector3{X: 0, Y: 1, Z: 0}, rl.Vector3{X: 0, Y: 0, Z: 0})
 
 	for !rl.WindowShouldClose() {
+		now = time.Now()
+
 		dt := rl.GetFrameTime()
 
 		// player movement start
@@ -88,7 +91,7 @@ func main() {
 
 		bullet.UpdatePlayerBullets(dt)
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && time.Since(lastBlast) >= blastCooldown {
-			lastBlast = time.Now()
+			lastBlast = now
 			rl.PlaySound(blastSound)
 			bullet.CreatePlayerBullet(playerPosition, playerNormalizedForward)
 		}
@@ -146,7 +149,7 @@ func main() {
 		bullet.DrawPlayerBullets()
 		// --- end gun ---
 
-		enemy.DrawEnemies()
+		enemy.DrawEnemies(now)
 
 		rl.EndMode3D()
 
