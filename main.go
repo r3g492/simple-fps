@@ -23,7 +23,7 @@ func main() {
 	rl.InitWindow(width, height, "ammo")
 	defer rl.CloseWindow()
 
-	rl.SetTargetFPS(60)
+	rl.SetTargetFPS(144)
 	rl.InitAudioDevice()
 
 	playerPosition := rl.Vector3{X: 0, Y: 1, Z: 0}
@@ -41,6 +41,7 @@ func main() {
 	// https://pixabay.com/sound-effects/shotgun-03-38220/
 	blastSound := LoadSoundFromEmbedded("shotgun-03-38220.mp3")
 	blastCooldown := 200 * time.Millisecond
+	blastShowtime := 10 * time.Millisecond
 	lastBlast := time.Now()
 
 	logEvery := 1000 * time.Millisecond
@@ -86,9 +87,7 @@ func main() {
 		}
 
 		bullet.UpdatePlayerBullets(dt)
-		blast := false
 		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) && time.Since(lastBlast) >= blastCooldown {
-			blast = true
 			lastBlast = time.Now()
 			rl.PlaySound(blastSound)
 			bullet.CreatePlayerBullet(playerPosition, playerNormalizedForward)
@@ -141,7 +140,7 @@ func main() {
 		gunEnd := rl.Vector3Add(gunStart, rl.Vector3Scale(playerNormalizedForward, barrelLen))
 		rl.DrawLine3D(gunStart, gunEnd, rl.Blue)
 		rl.DrawCylinderEx(gunStart, gunEnd, 0.06, 0.03, 32, rl.Gray)
-		if blast {
+		if time.Since(lastBlast) <= blastShowtime {
 			rl.DrawSphere(gunEnd, 0.15, rl.Yellow)
 		}
 		bullet.DrawPlayerBullets()
