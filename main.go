@@ -113,8 +113,9 @@ func main() {
 			playerUpVelocity = 0
 		}
 		// player movement end
-
 		camera := updatePlayerCamera(playerPosition, playerNormalizedForward, playerUpVector)
+
+		enemy.UpdateEnemy(now)
 
 		// raylib graphics
 		rl.BeginDrawing()
@@ -149,7 +150,7 @@ func main() {
 		bullet.DrawPlayerBullets()
 		// --- end gun ---
 
-		enemy.DrawEnemies(now)
+		enemy.DrawEnemies()
 
 		rl.EndMode3D()
 
