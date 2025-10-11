@@ -114,8 +114,8 @@ func main() {
 		}
 		// player movement end
 		camera := updatePlayerCamera(playerPosition, playerNormalizedForward, playerUpVector)
-
-		enemy.UpdateEnemy(now)
+		enemy.UpdateEnemyLogic(now)
+		enemy.UpdateEnemyAnimation(now)
 
 		// raylib graphics
 		rl.BeginDrawing()

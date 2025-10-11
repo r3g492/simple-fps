@@ -33,10 +33,24 @@ func CreateEnemy(position rl.Vector3, normalizedForward rl.Vector3) {
 	)
 }
 
-func UpdateEnemy(now time.Time) {
+func UpdateEnemyLogic(now time.Time) {
+	// TODO: implement
+	for i := range Enemies {
+		Enemies[i].CreatedAt = time.Now()
+	}
+}
+
+func UpdateEnemyAnimation(now time.Time) {
 	for i := range Enemies {
 		isAnimationDone := false
-		Enemies[i].Cubes, isAnimationDone = animation.EnemyIdle(now, Enemies[i].LastAnimation, Enemies[i].Position)
+		if Enemies[i].AnimationType == animation.Move {
+			Enemies[i].Cubes, isAnimationDone = animation.EnemyMove(now, Enemies[i].LastAnimation, Enemies[i].Position)
+		} else if Enemies[i].AnimationType == animation.Attack {
+			Enemies[i].Cubes, isAnimationDone = animation.EnemyAttack(now, Enemies[i].LastAnimation, Enemies[i].Position)
+		} else {
+			Enemies[i].Cubes, isAnimationDone = animation.EnemyIdle(now, Enemies[i].LastAnimation, Enemies[i].Position)
+		}
+
 		if isAnimationDone {
 			Enemies[i].LastAnimation = now
 		}
