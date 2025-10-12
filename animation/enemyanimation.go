@@ -48,9 +48,6 @@ func EnemyIdle(
 
 	elapsed := now.Sub(LastAnimation)
 	done := elapsed >= IdleAnimationLen
-	if done {
-		return []cube.Cube{}, true
-	}
 	return []cube.Cube{
 		head,
 		body,
