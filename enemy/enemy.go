@@ -44,11 +44,11 @@ func UpdateEnemyAnimation(now time.Time) {
 	for i := range Enemies {
 		isAnimationDone := false
 		if Enemies[i].AnimationType == animation.Move {
-			Enemies[i].Cubes, isAnimationDone = animation.EnemyMove(now, Enemies[i].LastAnimation, Enemies[i].Position)
+			Enemies[i].Cubes, isAnimationDone = animation.EnemyMove(now, Enemies[i].LastAnimation, Enemies[i].Position, Enemies[i].NormalizedForward)
 		} else if Enemies[i].AnimationType == animation.Attack {
-			Enemies[i].Cubes, isAnimationDone = animation.EnemyAttack(now, Enemies[i].LastAnimation, Enemies[i].Position)
+			Enemies[i].Cubes, isAnimationDone = animation.EnemyAttack(now, Enemies[i].LastAnimation, Enemies[i].Position, Enemies[i].NormalizedForward)
 		} else {
-			Enemies[i].Cubes, isAnimationDone = animation.EnemyIdle(now, Enemies[i].LastAnimation, Enemies[i].Position)
+			Enemies[i].Cubes, isAnimationDone = animation.EnemyIdle(now, Enemies[i].LastAnimation, Enemies[i].Position, Enemies[i].NormalizedForward)
 		}
 
 		if isAnimationDone {

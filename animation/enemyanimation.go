@@ -1,7 +1,6 @@
 package animation
 
 import (
-	"math"
 	"simple-fps/cube"
 	"time"
 
@@ -16,22 +15,45 @@ func EnemyIdle(
 	now time.Time,
 	LastAnimation time.Time,
 	position rl.Vector3,
+	normalizedForward rl.Vector3,
 ) ([]cube.Cube, bool) {
+
+	head := cube.Cube{
+		Position: rl.Vector3{
+			X: position.X,
+			Y: position.Y,
+			Z: position.Z,
+		},
+		Width:      0.5,
+		Height:     0.5,
+		Length:     0.5,
+		Color:      rl.Red,
+		RotAxis:    rl.Vector3{X: 1, Y: 1, Z: 1},
+		RotDegrees: 36,
+	}
+
+	body := cube.Cube{
+		Position: rl.Vector3{
+			X: position.X,
+			Y: position.Y - 0.5,
+			Z: position.Z,
+		},
+		Width:      3,
+		Height:     0.5,
+		Length:     0.5,
+		Color:      rl.Red,
+		RotAxis:    rl.Vector3{X: 1, Y: 1, Z: 1},
+		RotDegrees: 36,
+	}
+
 	elapsed := now.Sub(LastAnimation)
 	done := elapsed >= IdleAnimationLen
-	if !done {
-		p := elapsed.Seconds() / IdleAnimationLen.Seconds()
-		tri := 1 - math.Abs(2*p-1)
-		position.Y -= float32(idleAmp * tri)
+	if done {
+		return []cube.Cube{}, true
 	}
 	return []cube.Cube{
-		{
-			Position: position,
-			Width:    1,
-			Height:   1,
-			Length:   1,
-			Color:    rl.Red,
-		},
+		head,
+		body,
 	}, done
 }
 
@@ -39,44 +61,16 @@ func EnemyMove(
 	now time.Time,
 	LastAnimation time.Time,
 	position rl.Vector3,
+	normalizedForward rl.Vector3,
 ) ([]cube.Cube, bool) {
-	elapsed := now.Sub(LastAnimation)
-	done := elapsed >= IdleAnimationLen
-	if !done {
-		p := elapsed.Seconds() / IdleAnimationLen.Seconds()
-		tri := 1 - math.Abs(2*p-1)
-		position.Y -= float32(idleAmp * tri)
-	}
-	return []cube.Cube{
-		{
-			Position: position,
-			Width:    1,
-			Height:   1,
-			Length:   1,
-			Color:    rl.Red,
-		},
-	}, done
+	return []cube.Cube{}, false
 }
 
 func EnemyAttack(
 	now time.Time,
 	LastAnimation time.Time,
 	position rl.Vector3,
+	normalizedForward rl.Vector3,
 ) ([]cube.Cube, bool) {
-	elapsed := now.Sub(LastAnimation)
-	done := elapsed >= IdleAnimationLen
-	if !done {
-		p := elapsed.Seconds() / IdleAnimationLen.Seconds()
-		tri := 1 - math.Abs(2*p-1)
-		position.Y -= float32(idleAmp * tri)
-	}
-	return []cube.Cube{
-		{
-			Position: position,
-			Width:    1,
-			Height:   1,
-			Length:   1,
-			Color:    rl.Red,
-		},
-	}, done
+	return []cube.Cube{}, false
 }
