@@ -49,7 +49,7 @@ func main() {
 	lastLog := now
 	rl.DisableCursor()
 
-	enemy.CreateEnemy(rl.Vector3{X: 0, Y: 1, Z: 0}, rl.Vector3{X: 0, Y: 0, Z: 0})
+	enemy.CreateEnemy(rl.Vector3{X: 0, Y: 1, Z: 0}, rl.Vector3{X: 1, Y: 0, Z: 1})
 
 	for !rl.WindowShouldClose() {
 		now = time.Now()

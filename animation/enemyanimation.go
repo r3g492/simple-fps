@@ -24,12 +24,12 @@ func EnemyIdle(
 			Y: position.Y,
 			Z: position.Z,
 		},
-		Width:      0.5,
-		Height:     0.5,
-		Length:     0.5,
-		Color:      rl.Red,
-		RotAxis:    rl.Vector3{X: 1, Y: 1, Z: 1},
-		RotDegrees: 36,
+		Width:   0.5,
+		Height:  0.5,
+		Length:  0.5,
+		Color:   rl.Red,
+		Forward: normalizedForward,
+		Roll:    30,
 	}
 
 	body := cube.Cube{
@@ -38,12 +38,12 @@ func EnemyIdle(
 			Y: position.Y - 0.5,
 			Z: position.Z,
 		},
-		Width:      3,
-		Height:     0.5,
-		Length:     0.5,
-		Color:      rl.Red,
-		RotAxis:    rl.Vector3{X: 1, Y: 1, Z: 1},
-		RotDegrees: 36,
+		Width:   3,
+		Height:  0.5,
+		Length:  0.5,
+		Color:   rl.Red,
+		Forward: normalizedForward,
+		Roll:    0,
 	}
 
 	elapsed := now.Sub(LastAnimation)
